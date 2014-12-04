@@ -2,6 +2,7 @@
 *By: AJ Savino*
 
 AESPlus is an open source encryption tool designed to make encrypting files, text, and streams simple and secure. Utilizing a layer of proprietary encryption before securing your data with AES-256 adds an extra layer of security to protect your data.
+
 The command line tool is simple to use. Just drag and drop files onto the exe to get started.
 
 Features:
