@@ -1,0 +1,8 @@
+D:\workspace\local\csharp\AESPlus\AESPlusCLI\bin\Release\AESPlusCLI.exe.config
+D:\workspace\local\csharp\AESPlus\AESPlusCLI\bin\Release\AESPlusCLI.exe
+D:\workspace\local\csharp\AESPlus\AESPlusCLI\bin\Release\AESPlusCLI.pdb
+D:\workspace\local\csharp\AESPlus\AESPlusCLI\bin\Release\AESPlus.dll
+D:\workspace\local\csharp\AESPlus\AESPlusCLI\bin\Release\AESPlus.pdb
+D:\workspace\local\csharp\AESPlus\AESPlusCLI\obj\Release\AESPlusCLI.csprojResolveAssemblyReference.cache
+D:\workspace\local\csharp\AESPlus\AESPlusCLI\obj\Release\AESPlusCLI.exe
+D:\workspace\local\csharp\AESPlus\AESPlusCLI\obj\Release\AESPlusCLI.pdb
