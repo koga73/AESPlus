@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 //Symmetric Encryption
 public class AESPlus {
 	protected const int KEY_SIZE = 256; //(128, 192, 256)
-	protected const int CHUNK_SIZE = 1024; //1kb
+	protected const int CHUNK_SIZE = 4096; //4kb
 	
 	public delegate void OnProgressHandler(object sender, AESPlusProgressEventArgs evt);
 	public static event OnProgressHandler OnProgress;
@@ -196,6 +196,7 @@ public class AESPlus {
 		return newKey;
 	}
 
+	//Proprietary encryption
 	private static byte[] PlusCrypt(byte[] buffer, byte[] key, byte[] salt, byte offset){
 		int bufferLen = buffer.Length;
 		int keyLen = key.Length;

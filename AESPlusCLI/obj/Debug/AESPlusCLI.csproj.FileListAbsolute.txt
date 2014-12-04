@@ -6,3 +6,11 @@ D:\workspace\local\csharp\AESPlus\AESPlusCLI\bin\Debug\AESPlus.pdb
 D:\workspace\local\csharp\AESPlus\AESPlusCLI\obj\Debug\AESPlusCLI.csprojResolveAssemblyReference.cache
 D:\workspace\local\csharp\AESPlus\AESPlusCLI\obj\Debug\AESPlusCLI.exe
 D:\workspace\local\csharp\AESPlus\AESPlusCLI\obj\Debug\AESPlusCLI.pdb
+D:\workspace\git\AESPlus\AESPlusCLI\bin\Debug\AESPlusCLI.exe.config
+D:\workspace\git\AESPlus\AESPlusCLI\bin\Debug\AESPlusCLI.exe
+D:\workspace\git\AESPlus\AESPlusCLI\bin\Debug\AESPlusCLI.pdb
+D:\workspace\git\AESPlus\AESPlusCLI\bin\Debug\AESPlus.dll
+D:\workspace\git\AESPlus\AESPlusCLI\bin\Debug\AESPlus.pdb
+D:\workspace\git\AESPlus\AESPlusCLI\obj\Debug\AESPlusCLI.csprojResolveAssemblyReference.cache
+D:\workspace\git\AESPlus\AESPlusCLI\obj\Debug\AESPlusCLI.exe
+D:\workspace\git\AESPlus\AESPlusCLI\obj\Debug\AESPlusCLI.pdb
