@@ -2,6 +2,7 @@
 * AJ Savino
 */
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Diagnostics;
@@ -97,6 +98,20 @@ namespace AESPlusCLI {
                 return;
             } else if (fileNames.Count == 0 || string.IsNullOrEmpty(pass)){ //Treat each argument as a fileName. Activate wizard
 				fileNames.AddRange(args);
+				int fileNamesLen = fileNames.Count;
+				for (int i = 0; i < fileNamesLen; i++){
+					string fileName = fileNames[i];
+					if (Directory.Exists(fileName)){
+						fileNames.Remove(fileName);
+						i--;
+						string[] files = Directory.GetFiles(fileName, "*.*", SearchOption.AllDirectories);
+						foreach (string file in files){
+							if (!fileNames.Contains(file)){
+								fileNames.Add(file);
+							}
+						}
+					}
+				}
 				LogMessage(fileNames.Count + " files");
 				LogMessage();
 				string letter;

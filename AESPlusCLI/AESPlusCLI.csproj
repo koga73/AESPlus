@@ -67,6 +67,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ILMerge.doc" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Framework\AESPlus\AESPlus.csproj">
@@ -93,10 +95,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="AESPlusCLI.ico" />
+    <Content Include="ILMerge.exe" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>rename AESPlusCLI.exe AESPlus.exe</PostBuildEvent>
+    <PostBuildEvent>"$(ProjectDir)ILMerge.exe" /out:"$(TargetDir)AESPlusMerged.exe" "$(TargetDir)AESPlusCLI.exe" "$(TargetDir)AESPlus.dll"
+rename AESPlusMerged.exe AESPlus.exe</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>
