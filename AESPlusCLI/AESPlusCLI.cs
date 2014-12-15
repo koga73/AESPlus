@@ -127,23 +127,22 @@ namespace AESPlusCLI {
 				} else if (letter == "d"){
 					encrypt = false;
 				}
-				LogMessage("Type the password to use:"); //Code below hides password input
-				pass = "";
-				ConsoleKeyInfo newKey;
-				while (!Console.KeyAvailable){
-					Thread.Sleep(250); //Wait for key
-				}
-				while ((newKey = Console.ReadKey(true)).Key != ConsoleKey.Enter){
-					char keyChar = newKey.KeyChar;
-					if (keyChar >= 32 && keyChar <= 126){ //Valid chars
-						pass += keyChar;
-					}
-					if (keyChar == 8){ //Backspace
-						if (pass.Length > 0){
-							pass = pass.Substring(0, pass.Length - 1);
+				do {
+					LogMessage("Type the password to use:");
+					pass = MaskInput();
+					if (encrypt){
+						LogMessage("Confirm the password:");
+						string confirmPass = MaskInput();
+						if (confirmPass == pass){
+							break;
+						} else {
+							LogMessage("Passwords do not match!");
+							LogMessage();
 						}
+					} else {
+						break;
 					}
-				}
+				} while (true);
 				LogMessage();
 			}
 
@@ -196,6 +195,27 @@ namespace AESPlusCLI {
 				}
 				LogMessage("", ConsoleColor.White);
 			}
+		}
+
+		//Hides user input for passwords
+		protected static string MaskInput(){
+			string input = "";
+			ConsoleKeyInfo newKey;
+			while (!Console.KeyAvailable){
+				Thread.Sleep(250); //Wait for key
+			}
+			while ((newKey = Console.ReadKey(true)).Key != ConsoleKey.Enter){
+				char keyChar = newKey.KeyChar;
+				if (keyChar >= 32 && keyChar <= 126){ //Valid chars
+					input += keyChar;
+				}
+				if (keyChar == 8){ //Backspace
+					if (input.Length > 0){
+						input = input.Substring(0, input.Length - 1);
+					}
+				}
+			}
+			return input;
 		}
 
 		protected static void Handler_AESPlus_Progress(object sender, AESPlusProgressEventArgs evt){
