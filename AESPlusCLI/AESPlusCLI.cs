@@ -9,12 +9,19 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace AESPlusCLI {
 	class AESPlusCLI {
 		protected static int _lastProgress = 0;
-
+		
+		[STAThread]
 		static void Main(string[] args){
+			Debug.Print(AESPlus.EncryptString("hello world", "test123"));
+			Debug.Print(AESPlus.DecryptString(AESPlus.EncryptString("hello world", "test123"), "test123"));
+			Debug.Print("\n");
+			return;
+
 			bool showHelp = false;
 
 			bool encrypt = true;
@@ -25,7 +32,8 @@ namespace AESPlusCLI {
 			int argsLen = args.Length;
 			switch (argsLen){
 				case 0:
-					showHelp = true;
+					Application app = new Application();
+					app.Run(new AESPlusGUI.MainWindow());
 					break;
 				case 1:
 					arg = args[0].ToLower();

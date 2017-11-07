@@ -11,6 +11,7 @@
     <AssemblyName>AESPlusCLI</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -23,7 +24,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -53,6 +53,8 @@
     <ApplicationIcon>AESPlusCLI.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -60,6 +62,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AESPlusCLI.cs" />
@@ -71,6 +74,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AESPlusGUI\AESPlusGUI.csproj">
+      <Project>{3af7a8fb-8578-4428-9714-fc0264cf0d5a}</Project>
+      <Name>AESPlusGUI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Framework\AESPlus\AESPlus.csproj">
       <Project>{84180157-5b55-465e-b6d2-5e757c1ddbac}</Project>
       <Name>AESPlus</Name>
@@ -99,8 +106,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"$(ProjectDir)ILMerge.exe" /out:"$(TargetDir)AESPlusMerged.exe" "$(TargetDir)AESPlusCLI.exe" "$(TargetDir)AESPlus.dll"
-rename AESPlusMerged.exe AESPlus.exe</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>

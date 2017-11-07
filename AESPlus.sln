@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Blend for Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AESPlusCLI", "AESPlusCLI\AESPlusCLI.csproj", "{DE025F40-B0FF-4831-BD30-E6B2C12C0EC0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AESPlus", "Framework\AESPlus\AESPlus.csproj", "{84180157-5B55-465E-B6D2-5E757C1DDBAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AESPlusGUI", "AESPlusGUI\AESPlusGUI.csproj", "{3AF7A8FB-8578-4428-9714-FC0264CF0D5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +23,10 @@ Global
 		{84180157-5B55-465E-B6D2-5E757C1DDBAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84180157-5B55-465E-B6D2-5E757C1DDBAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84180157-5B55-465E-B6D2-5E757C1DDBAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AF7A8FB-8578-4428-9714-FC0264CF0D5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AF7A8FB-8578-4428-9714-FC0264CF0D5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AF7A8FB-8578-4428-9714-FC0264CF0D5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AF7A8FB-8578-4428-9714-FC0264CF0D5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

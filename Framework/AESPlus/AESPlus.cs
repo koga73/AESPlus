@@ -6,27 +6,33 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using System.Linq;
+using System.Diagnostics;
 
 //Symmetric Encryption
 public class AESPlus {
 	protected const int KEY_SIZE = 256; //(128, 192, 256)
+	protected const int BLOCK_SIZE = 128;
 	protected const int CHUNK_SIZE = 4096; //4kb
-	
+
 	public delegate void OnProgressHandler(object sender, AESPlusProgressEventArgs evt);
 	public static event OnProgressHandler OnProgress;
 
 	public static CancellationToken? CancelToken = null;
 
-	public static void EncryptFile(string fileName, string key){
-		EncryptFile(fileName, Encoding.UTF8.GetBytes(key));
+	public static CipherMode MODE = CipherMode.CBC;
+	public static PaddingMode PADDING = PaddingMode.PKCS7;
+	public static Boolean UsePlusCrypt = false;
+
+	public static void EncryptFile(string fileName, string password){
+		EncryptFile(fileName, ComputeKey(password), ComputeIV(password));
 	}
-	public static void EncryptFile(string fileName, byte[] key){
+	public static void EncryptFile(string fileName, byte[] key, byte[] iv){
 		string fileNameEncrypted = fileName + ".encrypted";
 		try {
 			using (FileStream inputFS = new FileStream(fileName, FileMode.Open, FileAccess.Read)){
 				using (FileStream outputFS = new FileStream(fileNameEncrypted, FileMode.Create, FileAccess.Write)){
-					EncryptStream(inputFS, outputFS, key);
+					EncryptStream(inputFS, outputFS, key, iv);
 				}
 			}
 			ReplaceFile(fileName, fileNameEncrypted);
@@ -35,15 +41,15 @@ public class AESPlus {
 		}
 	}
 
-	public static void DecryptFile(string fileName, string key){
-		DecryptFile(fileName, Encoding.UTF8.GetBytes(key));
+	public static void DecryptFile(string fileName, string password){
+		DecryptFile(fileName, ComputeKey(password), ComputeIV(password));
 	}
-	public static void DecryptFile(string fileName, byte[] key){
+	public static void DecryptFile(string fileName, byte[] key, byte[] iv){
 		string fileNameDecrypted = fileName + ".decrypted";
 		try {
 			using (FileStream inputFS = new FileStream(fileName, FileMode.Open, FileAccess.Read)){
 				using (FileStream outputFS = new FileStream(fileNameDecrypted, FileMode.Create, FileAccess.Write)){
-					DecryptStream(inputFS, outputFS, key);
+					DecryptStream(inputFS, outputFS, key, iv);
 				}
 			}
 			ReplaceFile(fileName, fileNameDecrypted);
@@ -52,51 +58,47 @@ public class AESPlus {
 		}
 	}
 
-	public static string EncryptString(string input, string key){
-		return EncryptString(input, Encoding.UTF8.GetBytes(key));
+	public static string EncryptString(string input, string password){
+		return EncryptString(input, ComputeKey(password), ComputeIV(password));
 	}
-	public static string EncryptString(string input, byte[] key){
+	public static string EncryptString(string input, byte[] key, byte[] iv){
 		using (MemoryStream inputMS = new MemoryStream()){
 			byte[] inputBytes = Encoding.UTF8.GetBytes(input);
 			inputMS.Write(inputBytes, 0, inputBytes.Length);
 			inputMS.Position = 0;
 			using (MemoryStream outputMS = new MemoryStream()){
-				EncryptStream(inputMS, outputMS, key);
+				EncryptStream(inputMS, outputMS, key, iv);
 				return Convert.ToBase64String(outputMS.ToArray());
 			}
 		}
 	}
 
-	public static string DecryptString(string input, string key){
-		return DecryptString(input, Encoding.UTF8.GetBytes(key));
+	public static string DecryptString(string input, string password){
+		return DecryptString(input, ComputeKey(password), ComputeIV(password));
 	}
-	public static string DecryptString(string input, byte[] key){
+	public static string DecryptString(string input, byte[] key, byte[] iv){
 		using (MemoryStream inputMS = new MemoryStream()){
 			byte[] inputBytes = Convert.FromBase64String(input);
 			inputMS.Write(inputBytes, 0, inputBytes.Length);
 			inputMS.Position = 0;
 			using (MemoryStream outputMS = new MemoryStream()){
-				DecryptStream(inputMS, outputMS, key);
+				DecryptStream(inputMS, outputMS, key, iv);
 				return Encoding.UTF8.GetString(outputMS.ToArray());
 			}
 		}
 	}
 
-	public static void EncryptStream(Stream inputStream, Stream outputStream, byte[] key){
-		byte[] iv = ComputeIV(key);
-		byte[] salt = key;
-		key = ComputeKey(key);
-		
+	public static void EncryptStream(Stream inputStream, Stream outputStream, byte[] key, byte[] iv){
 		using (RijndaelManaged aes = new RijndaelManaged()){
 			CryptoStream cs = null;
 			try {
-				aes.Padding = PaddingMode.PKCS7;
-				aes.Mode = CipherMode.CBC;
-				aes.BlockSize = 128;
+				aes.Mode = MODE;
+				aes.Padding = PADDING;
+				aes.BlockSize = BLOCK_SIZE;
 				aes.KeySize = KEY_SIZE;
 				aes.Key = key;
 				aes.IV = iv;
-
+				
 				cs = new CryptoStream(outputStream, aes.CreateEncryptor(aes.Key, aes.IV), CryptoStreamMode.Write);
 				byte[] buffer = new byte[CHUNK_SIZE];
 				int readSize;
@@ -105,10 +107,14 @@ public class AESPlus {
 					if (CancelToken != null && CancelToken.Value.IsCancellationRequested){
 						CancelToken.Value.ThrowIfCancellationRequested();
 					}
-					PlusCrypt(buffer, key, salt, (byte)(offset % 0xFF));
+					if (UsePlusCrypt){
+						//PlusCrypt(buffer, key, salt, (byte)(offset % 0xFF));
+					}
 					cs.Write(buffer, 0, readSize);
 					offset++;
-					OnProgress(null, new AESPlusProgressEventArgs((float)inputStream.Position / (float)inputStream.Length));
+					if (OnProgress != null){
+						OnProgress(null, new AESPlusProgressEventArgs((float)inputStream.Position / (float)inputStream.Length));
+					}
 				}
 				cs.FlushFinalBlock();
 			} finally {
@@ -117,17 +123,13 @@ public class AESPlus {
 		}
 	}
 
-	public static void DecryptStream(Stream inputStream, Stream outputStream, byte[] key){
-		byte[] iv = ComputeIV(key);
-		byte[] salt = key;
-		key = ComputeKey(key);
-		
+	public static void DecryptStream(Stream inputStream, Stream outputStream, byte[] key, byte[] iv){
 		using (RijndaelManaged aes = new RijndaelManaged()){
 			CryptoStream cs = null;
 			try {
-				aes.Padding = PaddingMode.PKCS7;
-				aes.Mode = CipherMode.CBC;
-				aes.BlockSize = 128;
+				aes.Mode = MODE;
+				aes.Padding = PADDING;
+				aes.BlockSize = BLOCK_SIZE;
 				aes.KeySize = KEY_SIZE;
 				aes.Key = key;
 				aes.IV = iv;
@@ -140,10 +142,14 @@ public class AESPlus {
 					if (CancelToken != null && CancelToken.Value.IsCancellationRequested){
 						CancelToken.Value.ThrowIfCancellationRequested();
 					}
-					PlusCrypt(buffer, key, salt, (byte)(offset % 0xFF));
+					if (UsePlusCrypt){
+						//PlusCrypt(buffer, key, salt, (byte)(offset % 0xFF));
+					}
 					outputStream.Write(buffer, 0, readSize);
 					offset++;
-					OnProgress(null, new AESPlusProgressEventArgs((float)inputStream.Position / (float)inputStream.Length));
+					if (OnProgress != null){
+						OnProgress(null, new AESPlusProgressEventArgs((float)inputStream.Position / (float)inputStream.Length));
+					}
 				}
 			} finally {
 				aes.Dispose();
@@ -166,9 +172,9 @@ public class AESPlus {
 		}
 	}
 
-	private static byte[] ComputeIV(byte[] key){
+	private static byte[] ComputeIV(String password){
 		SHA256 sha256 = SHA256.Create();
-		byte[] iv = sha256.ComputeHash(key);
+		byte[] iv = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
 		int ivLen = iv.Length;
 		byte[] tempIV = new byte[ivLen];
 		for (int i = 0; i < ivLen; i++){
@@ -183,9 +189,9 @@ public class AESPlus {
 		return tempIV;
 	}
 
-	private static byte[] ComputeKey(byte[] key){
+	private static byte[] ComputeKey(String password){
 		SHA256 sha256 = SHA256.Create();
-		byte[] newKey = sha256.ComputeHash(key);
+		byte[] newKey = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
 		int keyLen = newKey.Length;
 		byte[] tempKey = new byte[keyLen];
 		for (int i = 0; i < keyLen; i++){
@@ -200,14 +206,26 @@ public class AESPlus {
 	private static byte[] PlusCrypt(byte[] buffer, byte[] key, byte[] salt, byte offset){
 		int bufferLen = buffer.Length;
 		int keyLen = key.Length;
-		string preHash = ((int)offset).ToString() + Encoding.UTF8.GetString(key) + Encoding.UTF8.GetString(salt);
-		byte[] hash = SHA512.Create().ComputeHash(Encoding.UTF8.GetBytes(preHash));
+		byte[] preHash = new byte[]{offset}.Concat(key).Concat(salt).ToArray();
+		byte[] hash = SHA512.Create().ComputeHash(preHash);
 		int hashLen = hash.Length;
+		int hashIndex = 0;
 		for (int i = 0; i < bufferLen; i++){
-			byte hashByte = (i < hashLen) ? hash[i] : hash[i % hashLen];
+			byte hashByte = hash[hashIndex];
 			buffer[i] = (byte)((int)buffer[i] ^ (((int)hashByte + (int)offset + i) % 0xFF));
+			hashIndex++;
+			if (hashIndex == hashLen){
+				hashIndex = 0;
+			}
 		}
 		return buffer;
+	}
+
+	public static byte[] StringToByteArray(string hex) {
+		return Enumerable.Range(0, hex.Length)
+						 .Where(x => x % 2 == 0)
+						 .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+						 .ToArray();
 	}
 }
 
