@@ -13,12 +13,13 @@ using System.Windows;
 
 namespace AESPlusCLI {
 	class AESPlusCLI {
+		protected static AESPlus _aesPlus = new AESPlus();
 		protected static int _lastProgress = 0;
 		
 		[STAThread]
 		static void Main(string[] args){
-			Debug.Print(AESPlus.EncryptString("hello world", "test123"));
-			Debug.Print(AESPlus.DecryptString(AESPlus.EncryptString("hello world", "test123"), "test123"));
+			Debug.Print(_aesPlus.EncryptString("hello world", "test123"));
+			Debug.Print(_aesPlus.DecryptString(_aesPlus.EncryptString("hello world", "test123"), "test123"));
 			Debug.Print("\n");
 			return;
 
@@ -155,7 +156,7 @@ namespace AESPlusCLI {
 			}
 
 			CancellationTokenSource cancelSource = new CancellationTokenSource();
-			AESPlus.OnProgress += Handler_AESPlus_Progress;
+			_aesPlus.OnProgress += Handler_AESPlus_Progress;
 			foreach (string fileName in fileNames){
 				if (cancelSource.IsCancellationRequested){
 					break;
@@ -167,16 +168,16 @@ namespace AESPlusCLI {
 					LogMessage("Press ESC to cancel", ConsoleColor.DarkYellow);
 					LogMessage();
 					task = Task.Factory.StartNew(() => {
-						AESPlus.CancelToken = cancelSource.Token;
-						AESPlus.EncryptFile(fileName, pass);
+						_aesPlus.CancelToken = cancelSource.Token;
+						_aesPlus.EncryptFile(fileName, pass);
 					}, cancelSource.Token);
 				} else {
 					LogMessage("Decrypting: " + fileName, ConsoleColor.DarkGreen);
 					LogMessage("Press ESC to cancel", ConsoleColor.DarkYellow);
 					LogMessage();
 					task = Task.Factory.StartNew(() => {
-						AESPlus.CancelToken = cancelSource.Token;
-						AESPlus.DecryptFile(fileName, pass);
+						_aesPlus.CancelToken = cancelSource.Token;
+						_aesPlus.DecryptFile(fileName, pass);
 					}, cancelSource.Token);
 				}
 				while (!task.IsCompleted && !task.IsCanceled && !task.IsFaulted){
