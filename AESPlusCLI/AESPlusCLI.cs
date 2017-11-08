@@ -18,9 +18,9 @@ namespace AESPlusCLI {
 		
 		[STAThread]
 		static void Main(string[] args){
-			Debug.Print(_aesPlus.EncryptString("hello world", "test123"));
-			Debug.Print(_aesPlus.DecryptString(_aesPlus.EncryptString("hello world", "test123"), "test123"));
-			Debug.Print("\n");
+			//Debug.Print(_aesPlus.EncryptString("hello world", "test123"));
+			//Debug.Print(_aesPlus.DecryptString(_aesPlus.EncryptString("hello world", "test123"), "test123"));
+			//Debug.Print("\n");
 			return;
 
 			bool showHelp = false;
@@ -228,7 +228,7 @@ namespace AESPlusCLI {
 		}
 
 		protected static void Handler_AESPlus_Progress(object sender, AESPlusProgressEventArgs evt){
-			int progress = (int)Math.Floor(evt.Progress * 100);
+			int progress = (int)Math.Floor(evt.CurrentFileProgress * 100);
 			if (progress != _lastProgress){
 				_lastProgress = progress;
 				Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop - 1);
